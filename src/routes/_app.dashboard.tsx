@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FileText, MessageCircle, History, Sparkles, Activity } from "lucide-react";
+import { FileText, MessageCircle, History, Sparkles, Activity, Landmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 
@@ -56,6 +56,12 @@ function Dashboard() {
           title="Pregnancy Chat"
           desc="Ask anything — we're here to help, day or night."
           to="/chatbot"
+        />
+        <QuickCard
+          icon={Landmark}
+          title="Schemes & Benefits"
+          desc="Government schemes and free maternal care you qualify for."
+          to="/schemes"
         />
       </div>
 
