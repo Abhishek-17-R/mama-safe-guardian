@@ -463,10 +463,13 @@ function ResultStep({ result, form, onNew }: {
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-3">
+        <Button onClick={handleDownload} size="lg" className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-soft)]">
+          <Download className="mr-2 h-4 w-4" /> Download PDF report
+        </Button>
         <Button onClick={onNew} variant="outline" size="lg">
           <FileText className="mr-2 h-4 w-4" /> New assessment
         </Button>
-        <Button asChild size="lg" className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-soft)]">
+        <Button asChild variant="ghost" size="lg">
           <Link to="/history">
             <History className="mr-2 h-4 w-4" /> View history
           </Link>
