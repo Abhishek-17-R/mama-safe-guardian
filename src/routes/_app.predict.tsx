@@ -370,10 +370,35 @@ function Field({ label, children, full, required }: { label: string; children: R
   );
 }
 
-function ResultStep({ result, onNew }: {
+function ResultStep({ result, form, onNew }: {
   result: { id: string; risk_level: "low" | "mid" | "high"; probability: number; probabilities: { low: number; mid: number; high: number } };
+  form: FormState;
   onNew: () => void;
 }) {
+  const handleDownload = () => {
+    downloadReportPdf({
+      id: result.id,
+      patient_name: form.patient_name || null,
+      created_at: new Date().toISOString(),
+      risk_level: result.risk_level,
+      probability: result.probability,
+      probabilities: result.probabilities,
+      vitals: {
+        age: Number(form.age),
+        systolic_bp: Number(form.systolic_bp),
+        diastolic_bp: Number(form.diastolic_bp),
+        bs: Number(form.bs),
+        body_temp: Number(form.body_temp),
+        heart_rate: Number(form.heart_rate),
+        bmi: Number(form.bmi),
+        hemoglobin: Number(form.hemoglobin),
+        diabetes: form.diabetes ? 1 : 0,
+        prev_complications: form.prev_complications ? 1 : 0,
+      },
+      notes: form.notes || null,
+    });
+  };
+
   const meta = {
     low: {
       icon: CheckCircle2,
