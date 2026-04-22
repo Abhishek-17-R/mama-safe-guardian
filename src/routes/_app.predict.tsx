@@ -178,7 +178,7 @@ function PredictPage() {
       )}
 
       {step === "result" && result && (
-        <ResultStep result={result} onNew={reset} />
+        <ResultStep result={result} form={form} onNew={reset} />
       )}
     </div>
   );
