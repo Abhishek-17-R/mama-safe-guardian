@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Upload, FileText, Loader2, CheckCircle2, AlertTriangle, AlertCircle, ArrowRight, ArrowLeft, Sparkles, History } from "lucide-react";
+import { Upload, FileText, Loader2, CheckCircle2, AlertTriangle, AlertCircle, ArrowRight, ArrowLeft, Sparkles, History, Download } from "lucide-react";
+import { downloadReportPdf } from "@/lib/report-pdf";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
