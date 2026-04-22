@@ -1,11 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Heart, Mail, Phone, ArrowLeft } from "lucide-react";
+import { Heart, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
@@ -43,18 +41,9 @@ function SignupPage() {
             </Link>
           </p>
 
-          <Tabs defaultValue="email" className="mt-8">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="email"><Mail className="mr-2 h-4 w-4" />Email</TabsTrigger>
-              <TabsTrigger value="phone"><Phone className="mr-2 h-4 w-4" />Phone</TabsTrigger>
-            </TabsList>
-            <TabsContent value="email" className="mt-6">
-              <EmailSignupForm />
-            </TabsContent>
-            <TabsContent value="phone" className="mt-6">
-              <PhoneSignupForm />
-            </TabsContent>
-          </Tabs>
+          <div className="mt-8">
+            <EmailSignupForm />
+          </div>
         </div>
       </div>
 
@@ -100,8 +89,13 @@ function EmailSignupForm() {
     });
     setLoading(false);
     if (error) return toast.error(error.message);
-    toast.success("Check your email to verify your account!");
-    navigate({ to: "/login" });
+    toast.success("Account created! Signing you in...");
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+    if (signInError) {
+      navigate({ to: "/login" });
+      return;
+    }
+    navigate({ to: "/dashboard" });
   };
 
   return (
@@ -125,74 +119,3 @@ function EmailSignupForm() {
   );
 }
 
-function PhoneSignupForm() {
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [step, setStep] = useState<"phone" | "otp">("phone");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
-  const sendOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      phone,
-      options: { data: { full_name: fullName } },
-    });
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success("OTP sent to your phone");
-    setStep("otp");
-  };
-
-  const verifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.auth.verifyOtp({ phone, token: otp, type: "sms" });
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success("Account created!");
-    navigate({ to: "/dashboard" });
-  };
-
-  if (step === "otp") {
-    return (
-      <form onSubmit={verifyOtp} className="space-y-4">
-        <div className="space-y-2">
-          <Label>Enter the 6-digit code sent to {phone}</Label>
-          <div className="flex justify-center py-2">
-            <InputOTP maxLength={6} value={otp} onChange={setOtp}>
-              <InputOTPGroup>
-                {[0, 1, 2, 3, 4, 5].map((i) => <InputOTPSlot key={i} index={i} />)}
-              </InputOTPGroup>
-            </InputOTP>
-          </div>
-        </div>
-        <Button type="submit" disabled={loading || otp.length < 6} className="w-full bg-[image:var(--gradient-primary)]">
-          {loading ? "Verifying..." : "Verify & create account"}
-        </Button>
-        <button type="button" onClick={() => setStep("phone")} className="w-full text-sm text-muted-foreground hover:text-foreground">
-          ← Use a different number
-        </button>
-      </form>
-    );
-  }
-
-  return (
-    <form onSubmit={sendOtp} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="name">Full name</Label>
-        <Input id="name" required value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Jane Doe" />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="phone">Phone number</Label>
-        <Input id="phone" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210" />
-        <p className="text-xs text-muted-foreground">Include country code (e.g. +91)</p>
-      </div>
-      <Button type="submit" disabled={loading} className="w-full bg-[image:var(--gradient-primary)] shadow-[var(--shadow-soft)]">
-        {loading ? "Sending..." : "Send OTP"}
-      </Button>
-    </form>
-  );
-}
