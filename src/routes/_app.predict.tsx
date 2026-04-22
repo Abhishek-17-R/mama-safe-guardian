@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Upload, FileText, Loader2, CheckCircle2, AlertTriangle, AlertCircle, ArrowRight, ArrowLeft, Sparkles, History } from "lucide-react";
+import { Upload, FileText, Loader2, CheckCircle2, AlertTriangle, AlertCircle, ArrowRight, ArrowLeft, Sparkles, History, Download } from "lucide-react";
+import { downloadReportPdf } from "@/lib/report-pdf";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -177,7 +178,7 @@ function PredictPage() {
       )}
 
       {step === "result" && result && (
-        <ResultStep result={result} onNew={reset} />
+        <ResultStep result={result} form={form} onNew={reset} />
       )}
     </div>
   );
@@ -369,10 +370,35 @@ function Field({ label, children, full, required }: { label: string; children: R
   );
 }
 
-function ResultStep({ result, onNew }: {
+function ResultStep({ result, form, onNew }: {
   result: { id: string; risk_level: "low" | "mid" | "high"; probability: number; probabilities: { low: number; mid: number; high: number } };
+  form: FormState;
   onNew: () => void;
 }) {
+  const handleDownload = () => {
+    downloadReportPdf({
+      id: result.id,
+      patient_name: form.patient_name || null,
+      created_at: new Date().toISOString(),
+      risk_level: result.risk_level,
+      probability: result.probability,
+      probabilities: result.probabilities,
+      vitals: {
+        age: Number(form.age),
+        systolic_bp: Number(form.systolic_bp),
+        diastolic_bp: Number(form.diastolic_bp),
+        bs: Number(form.bs),
+        body_temp: Number(form.body_temp),
+        heart_rate: Number(form.heart_rate),
+        bmi: Number(form.bmi),
+        hemoglobin: Number(form.hemoglobin),
+        diabetes: form.diabetes ? 1 : 0,
+        prev_complications: form.prev_complications ? 1 : 0,
+      },
+      notes: form.notes || null,
+    });
+  };
+
   const meta = {
     low: {
       icon: CheckCircle2,
@@ -437,10 +463,13 @@ function ResultStep({ result, onNew }: {
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-3">
+        <Button onClick={handleDownload} size="lg" className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-soft)]">
+          <Download className="mr-2 h-4 w-4" /> Download PDF report
+        </Button>
         <Button onClick={onNew} variant="outline" size="lg">
           <FileText className="mr-2 h-4 w-4" /> New assessment
         </Button>
-        <Button asChild size="lg" className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-soft)]">
+        <Button asChild variant="ghost" size="lg">
           <Link to="/history">
             <History className="mr-2 h-4 w-4" /> View history
           </Link>
