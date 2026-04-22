@@ -5,7 +5,7 @@ import { predictRisk } from "@/lib/ml/predict.server";
 
 // ===== AI PDF EXTRACTION =====
 const ExtractInput = z.object({
-  pdfBase64: z.string().min(10).max(15_000_000), // raw base64 of PDF, ~15MB max
+  pdfBase64: z.string().min(10).max(15_000_000),
   mimeType: z.string().default("application/pdf"),
 });
 
@@ -49,10 +49,7 @@ Fields:
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [
@@ -61,10 +58,7 @@ Fields:
             role: "user",
             content: [
               { type: "text", text: "Extract the maternal health vitals from this hospital report." },
-              {
-                type: "image_url",
-                image_url: { url: `data:${data.mimeType};base64,${data.pdfBase64}` },
-              },
+              { type: "image_url", image_url: { url: `data:${data.mimeType};base64,${data.pdfBase64}` } },
             ],
           },
         ],
@@ -175,4 +169,54 @@ export const predictAndSave = createServerFn({ method: "POST" })
     }
 
     return { ...result, id: row.id };
+  });
+
+// ===== CHATBOT =====
+const ChatInput = z.object({
+  messages: z.array(z.object({
+    role: z.enum(["user", "assistant"]),
+    content: z.string().min(1).max(4000),
+  })).min(1).max(50),
+});
+
+export const chatWithAI = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => ChatInput.parse(input))
+  .handler(async ({ data }) => {
+    const apiKey = process.env.LOVABLE_API_KEY;
+    if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
+
+    const systemPrompt = `You are MatriCare's compassionate pregnancy assistant. You help expecting mothers with:
+- General pregnancy questions (nutrition, exercise, symptoms, trimester guidance)
+- Understanding maternal health vitals (BP, blood sugar, BMI, hemoglobin)
+- When to consult a doctor
+
+Guidelines:
+- Be warm, supportive, and easy to understand. Use simple language.
+- Always remind users you are NOT a doctor and they should consult their healthcare provider for medical decisions.
+- For symptoms suggesting emergency (severe headache, vision changes, heavy bleeding, severe abdominal pain, no fetal movement), urge them to seek immediate medical care.
+- Use markdown for clarity (bold, bullet points). Keep replies concise (under 250 words).
+- If asked something outside pregnancy/maternal health, gently redirect.`;
+
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [{ role: "system", content: systemPrompt }, ...data.messages],
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("Chat AI error:", res.status, errText);
+      if (res.status === 429) throw new Error("Too many messages — please wait a moment.");
+      if (res.status === 402) throw new Error("AI credits exhausted.");
+      throw new Error(`Chat failed (${res.status})`);
+    }
+
+    const json = await res.json();
+    const reply = json.choices?.[0]?.message?.content;
+    if (!reply) throw new Error("No response from AI");
+    return { reply };
   });
