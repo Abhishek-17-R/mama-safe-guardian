@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Heart, LogOut, LayoutDashboard, FileText, MessageCircle, History } from "lucide-react";
+import { Heart, LogOut, LayoutDashboard, FileText, MessageCircle, History, Landmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 
@@ -40,6 +40,7 @@ function AppLayout() {
             <NavItem to="/predict" icon={FileText} label="New Assessment" />
             <NavItem to="/history" icon={History} label="History" />
             <NavItem to="/chatbot" icon={MessageCircle} label="Chat" />
+            <NavItem to="/schemes" icon={Landmark} label="Schemes" />
           </nav>
 
           <div className="flex items-center gap-3">
