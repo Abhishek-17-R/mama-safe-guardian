@@ -1,11 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Heart, Mail, Phone, ArrowLeft } from "lucide-react";
+import { Heart, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
@@ -43,18 +41,9 @@ function SignupPage() {
             </Link>
           </p>
 
-          <Tabs defaultValue="email" className="mt-8">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="email"><Mail className="mr-2 h-4 w-4" />Email</TabsTrigger>
-              <TabsTrigger value="phone"><Phone className="mr-2 h-4 w-4" />Phone</TabsTrigger>
-            </TabsList>
-            <TabsContent value="email" className="mt-6">
-              <EmailSignupForm />
-            </TabsContent>
-            <TabsContent value="phone" className="mt-6">
-              <PhoneSignupForm />
-            </TabsContent>
-          </Tabs>
+          <div className="mt-8">
+            <EmailSignupForm />
+          </div>
         </div>
       </div>
 
@@ -100,8 +89,13 @@ function EmailSignupForm() {
     });
     setLoading(false);
     if (error) return toast.error(error.message);
-    toast.success("Check your email to verify your account!");
-    navigate({ to: "/login" });
+    toast.success("Account created! Signing you in...");
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+    if (signInError) {
+      navigate({ to: "/login" });
+      return;
+    }
+    navigate({ to: "/dashboard" });
   };
 
   return (
@@ -125,7 +119,7 @@ function EmailSignupForm() {
   );
 }
 
-function PhoneSignupForm() {
+function _UnusedPhoneSignupForm() {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
