@@ -1,8 +1,29 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth-context";
 import { Toaster } from "@/components/ui/sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 import appCss from "../styles.css?url";
+
+// Attach Supabase auth header to server function calls (client-side only).
+if (typeof window !== "undefined" && !(window as any).__serverFnAuthPatched) {
+  (window as any).__serverFnAuthPatched = true;
+  const originalFetch = window.fetch.bind(window);
+  window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
+    if (url.includes("/_serverFn/")) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        const headers = new Headers(init?.headers || (input instanceof Request ? input.headers : undefined));
+        if (!headers.has("authorization")) {
+          headers.set("authorization", `Bearer ${session.access_token}`);
+        }
+        return originalFetch(input, { ...init, headers });
+      }
+    }
+    return originalFetch(input, init);
+  };
+}
 
 function NotFoundComponent() {
   return (
