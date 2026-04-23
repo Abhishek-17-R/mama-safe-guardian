@@ -495,3 +495,83 @@ function ResultStep({ result, form, onNew }: {
     </div>
   );
 }
+
+function RiskInsightsCard({ form, level }: { form: FormState; level: "low" | "mid" | "high" }) {
+  const vitals = {
+    age: Number(form.age),
+    systolic_bp: Number(form.systolic_bp),
+    diastolic_bp: Number(form.diastolic_bp),
+    bs: Number(form.bs),
+    body_temp: Number(form.body_temp),
+    heart_rate: Number(form.heart_rate),
+    bmi: Number(form.bmi),
+    hemoglobin: Number(form.hemoglobin),
+    diabetes: form.diabetes ? 1 : 0,
+    prev_complications: form.prev_complications ? 1 : 0,
+  };
+  const flags = getRiskInsights(vitals);
+  const advice = getGeneralAdvice(level);
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-3xl border border-border/60 bg-card p-6 sm:p-8">
+        <h3 className="font-display text-xl font-semibold text-foreground">What's at risk</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {flags.length === 0
+            ? "All your vitals are within healthy pregnancy ranges. Keep it up!"
+            : `${flags.length} indicator${flags.length > 1 ? "s" : ""} need${flags.length > 1 ? "" : "s"} attention.`}
+        </p>
+
+        {flags.length > 0 && (
+          <div className="mt-5 space-y-3">
+            {flags.map((f, i) => {
+              const isHigh = f.severity === "high";
+              const Icon = isHigh ? AlertCircle : AlertTriangle;
+              return (
+                <div
+                  key={i}
+                  className={`rounded-2xl border p-4 ${
+                    isHigh ? "border-destructive/30 bg-destructive/5" : "border-warning/30 bg-warning/5"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div
+                      className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                        isHigh ? "bg-destructive/10" : "bg-warning/10"
+                      }`}
+                    >
+                      <Icon className={`h-4 w-4 ${isHigh ? "text-destructive" : "text-warning"}`} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex flex-wrap items-baseline justify-between gap-2">
+                        <p className="font-display text-base font-semibold text-foreground">{f.label}</p>
+                        <span className="text-sm font-medium text-foreground">{f.value}</span>
+                      </div>
+                      <p className="mt-1 text-sm text-muted-foreground">{f.issue}</p>
+                      <p className="mt-2 text-sm text-foreground">
+                        <strong className="font-medium">What to do: </strong>
+                        {f.advice}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <div className="rounded-3xl border border-border/60 bg-card p-6 sm:p-8">
+        <h3 className="font-display text-xl font-semibold text-foreground">Recommended next steps</h3>
+        <ul className="mt-4 space-y-3">
+          {advice.map((a, i) => (
+            <li key={i} className="flex items-start gap-3 text-sm text-foreground">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <span>{a}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
