@@ -473,6 +473,8 @@ function ResultStep({ result, form, onNew }: {
         </div>
       </div>
 
+      <RiskInsightsCard form={form} level={result.risk_level} />
+
       <div className="rounded-2xl border border-border/60 bg-muted/30 p-5 text-sm text-muted-foreground">
         <strong className="text-foreground">Disclaimer:</strong> MatriCare is a decision-support tool, not a substitute for professional medical advice. Always consult your healthcare provider.
       </div>
