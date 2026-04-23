@@ -260,15 +260,29 @@ function UploadStep({ extracting, onUpload, onSkip }: { extracting: boolean; onU
         </div>
       </label>
 
-      <div className="text-center">
-        <button
-          onClick={onSkip}
-          className="text-sm text-muted-foreground hover:text-foreground"
-          disabled={extracting}
-        >
-          Skip — I'll enter values manually →
-        </button>
+      <div className="relative flex items-center gap-4">
+        <div className="h-px flex-1 bg-border" />
+        <span className="text-xs uppercase tracking-wider text-muted-foreground">or</span>
+        <div className="h-px flex-1 bg-border" />
       </div>
+
+      <button
+        type="button"
+        onClick={onSkip}
+        disabled={extracting}
+        className="group flex w-full items-center justify-between rounded-2xl border border-border bg-card p-6 text-left transition-all hover:border-primary/40 hover:bg-primary/5 disabled:opacity-50"
+      >
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted group-hover:bg-primary/10">
+            <FileText className="h-5 w-5 text-foreground" />
+          </div>
+          <div>
+            <p className="font-display text-base font-semibold text-foreground">Enter values manually</p>
+            <p className="text-sm text-muted-foreground">Type your vitals directly — no PDF needed</p>
+          </div>
+        </div>
+        <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1" />
+      </button>
     </div>
   );
 }
