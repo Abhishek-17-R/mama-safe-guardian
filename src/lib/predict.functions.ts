@@ -78,23 +78,18 @@ Fields:
               parameters: {
                 type: "object",
                 properties: {
-                  patient_name: { type: ["string", "null"] },
-                  age: { type: ["number", "null"] },
-                  systolic_bp: { type: ["number", "null"] },
-                  diastolic_bp: { type: ["number", "null"] },
-                  bs: { type: ["number", "null"] },
-                  body_temp: { type: ["number", "null"] },
-                  heart_rate: { type: ["number", "null"] },
-                  bmi: { type: ["number", "null"] },
-                  hemoglobin: { type: ["number", "null"] },
-                  diabetes: { type: ["number", "null"], enum: [0, 1, null] },
-                  prev_complications: { type: ["number", "null"], enum: [0, 1, null] },
+                  patient_name: { type: "string", nullable: true },
+                  age: { type: "number", nullable: true },
+                  systolic_bp: { type: "number", nullable: true },
+                  diastolic_bp: { type: "number", nullable: true },
+                  bs: { type: "number", nullable: true },
+                  body_temp: { type: "number", nullable: true },
+                  heart_rate: { type: "number", nullable: true },
+                  bmi: { type: "number", nullable: true },
+                  hemoglobin: { type: "number", nullable: true },
+                  diabetes: { type: "number", nullable: true },
+                  prev_complications: { type: "number", nullable: true },
                 },
-                required: [
-                  "patient_name", "age", "systolic_bp", "diastolic_bp", "bs",
-                  "body_temp", "heart_rate", "bmi", "hemoglobin", "diabetes", "prev_complications",
-                ],
-                additionalProperties: false,
               },
             },
           },
@@ -108,7 +103,7 @@ Fields:
       console.error("AI gateway error:", res.status, errText);
       if (res.status === 429) throw new Error("Rate limit exceeded. Please try again in a moment.");
       if (res.status === 402) throw new Error("AI credits exhausted. Please add credits in workspace settings.");
-      throw new Error(`AI extraction failed (${res.status})`);
+      throw new Error(`AI extraction failed (${res.status}): ${errText.slice(0, 300)}`);
     }
 
     const json = await res.json();
