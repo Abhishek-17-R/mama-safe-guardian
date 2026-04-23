@@ -10,18 +10,30 @@ const ExtractInput = z.object({
 });
 
 const ExtractedSchema = z.object({
-  patient_name: z.string().nullable(),
-  age: z.number().nullable(),
-  systolic_bp: z.number().nullable(),
-  diastolic_bp: z.number().nullable(),
-  bs: z.number().nullable().describe("Blood sugar in mmol/L"),
-  body_temp: z.number().nullable().describe("Body temperature in Fahrenheit"),
-  heart_rate: z.number().nullable(),
-  bmi: z.number().nullable(),
-  hemoglobin: z.number().nullable().describe("Hemoglobin in g/dL"),
-  diabetes: z.number().min(0).max(1).nullable(),
-  prev_complications: z.number().min(0).max(1).nullable(),
-});
+  patient_name: z.string().nullish(),
+  age: z.number().nullish(),
+  systolic_bp: z.number().nullish(),
+  diastolic_bp: z.number().nullish(),
+  bs: z.number().nullish().describe("Blood sugar in mmol/L"),
+  body_temp: z.number().nullish().describe("Body temperature in Fahrenheit"),
+  heart_rate: z.number().nullish(),
+  bmi: z.number().nullish(),
+  hemoglobin: z.number().nullish().describe("Hemoglobin in g/dL"),
+  diabetes: z.number().min(0).max(1).nullish(),
+  prev_complications: z.number().min(0).max(1).nullish(),
+}).transform((d) => ({
+  patient_name: d.patient_name ?? null,
+  age: d.age ?? null,
+  systolic_bp: d.systolic_bp ?? null,
+  diastolic_bp: d.diastolic_bp ?? null,
+  bs: d.bs ?? null,
+  body_temp: d.body_temp ?? null,
+  heart_rate: d.heart_rate ?? null,
+  bmi: d.bmi ?? null,
+  hemoglobin: d.hemoglobin ?? null,
+  diabetes: d.diabetes ?? null,
+  prev_complications: d.prev_complications ?? null,
+}));
 
 export const extractFromPdf = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
