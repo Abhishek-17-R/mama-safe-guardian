@@ -108,7 +108,7 @@ Fields:
       console.error("AI gateway error:", res.status, errText);
       if (res.status === 429) throw new Error("Rate limit exceeded. Please try again in a moment.");
       if (res.status === 402) throw new Error("AI credits exhausted. Please add credits in workspace settings.");
-      throw new Error(`AI extraction failed (${res.status})`);
+      throw new Error(`AI extraction failed (${res.status}): ${errText.slice(0, 300)}`);
     }
 
     const json = await res.json();
