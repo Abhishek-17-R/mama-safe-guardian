@@ -140,3 +140,18 @@ function NewsColumn({ articles, error }: { articles: NewsItem[]; error: string |
     </div>
   );
 }
+
+function QuickCard({ icon: Icon, title, desc, to }: { icon: React.ComponentType<{ className?: string }>; title: string; desc: string; to: string }) {
+  return (
+    <Link
+      to={to}
+      className="group rounded-3xl border border-border/60 bg-card p-7 transition-all hover:border-primary/30 hover:shadow-[var(--shadow-soft)]"
+    >
+      <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+        <Icon className="h-5 w-5" />
+      </div>
+      <h3 className="font-display text-xl font-semibold text-foreground">{title}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
+    </Link>
+  );
+}
