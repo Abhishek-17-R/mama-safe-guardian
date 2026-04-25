@@ -1,12 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FileText, MessageCircle, History, Sparkles, Activity, Landmark } from "lucide-react";
+import { FileText, MessageCircle, History, Sparkles, Activity, Landmark, Newspaper, ExternalLink, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
+import { getMaternalNews, type NewsItem } from "@/lib/news.functions";
 
 export const Route = createFileRoute("/_app/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — MatriCare" }] }),
+  loader: () => getMaternalNews(),
   component: Dashboard,
 });
+
+function timeAgo(iso: string): string {
+  const d = new Date(iso).getTime();
+  const diff = Date.now() - d;
+  const m = Math.floor(diff / 60000);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const days = Math.floor(h / 24);
+  return `${days}d ago`;
+}
 
 function Dashboard() {
   const { user } = useAuth();
