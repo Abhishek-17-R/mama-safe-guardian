@@ -41,14 +41,26 @@ export const getMaternalNews = createServerFn({ method: "GET" }).handler(
         }>;
       };
 
-      const articles: NewsItem[] = (json.articles || []).map((a) => ({
-        title: a.title,
-        description: a.description,
-        url: a.url,
-        image: a.image,
-        source: a.source?.name ?? "Unknown",
-        publishedAt: a.publishedAt,
-      }));
+      // Whitelist filter: only keep articles whose title or description clearly mentions maternity topics
+      const KEYWORDS = [
+        "maternity", "maternal", "pregnan", "antenatal", "prenatal",
+        "postnatal", "postpartum", "childbirth", "midwif", "obstetric",
+        "expecting mother", "expectant mother", "newborn", "labor ward", "labour ward",
+      ];
+      const articles: NewsItem[] = (json.articles || [])
+        .filter((a) => {
+          const text = `${a.title ?? ""} ${a.description ?? ""}`.toLowerCase();
+          return KEYWORDS.some((k) => text.includes(k));
+        })
+        .slice(0, 8)
+        .map((a) => ({
+          title: a.title,
+          description: a.description,
+          url: a.url,
+          image: a.image,
+          source: a.source?.name ?? "Unknown",
+          publishedAt: a.publishedAt,
+        }));
 
       return { articles, error: null };
     } catch (err) {
