@@ -17,8 +17,11 @@ export const getMaternalNews = createServerFn({ method: "GET" }).handler(
     }
 
     try {
-      const q = encodeURIComponent('"maternal health" OR pregnancy OR "antenatal care" OR "maternal mortality"');
-      const url = `https://gnews.io/api/v4/search?q=${q}&lang=en&max=8&sortby=publishedAt&apikey=${apiKey}`;
+      // Strictly maternity-focused query
+      const q = encodeURIComponent(
+        '"maternity" OR "maternal health" OR "pregnancy" OR "pregnant" OR "antenatal" OR "prenatal" OR "postnatal" OR "postpartum" OR "childbirth" OR "expecting mother"'
+      );
+      const url = `https://gnews.io/api/v4/search?q=${q}&lang=en&max=20&sortby=publishedAt&in=title,description&apikey=${apiKey}`;
       const res = await fetch(url, { headers: { Accept: "application/json" } });
 
       if (!res.ok) {
