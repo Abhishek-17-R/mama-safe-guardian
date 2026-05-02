@@ -17,11 +17,11 @@ export const getMaternalNews = createServerFn({ method: "GET" }).handler(
     }
 
     try {
-      // Strictly maternity-focused query
+      // Strictly maternity-health-focused query, in the health topic
       const q = encodeURIComponent(
-        '"maternity" OR "maternal health" OR "pregnancy" OR "pregnant" OR "antenatal" OR "prenatal" OR "postnatal" OR "postpartum" OR "childbirth" OR "expecting mother"'
+        '("maternal health" OR "maternity care" OR "pregnancy health" OR "antenatal" OR "prenatal care" OR "postpartum" OR "childbirth" OR "midwifery" OR "obstetric" OR "maternal mortality") -celebrity -kardashian -bollywood -hollywood -actress -baby bump'
       );
-      const url = `https://gnews.io/api/v4/search?q=${q}&lang=en&max=20&sortby=publishedAt&in=title,description&apikey=${apiKey}`;
+      const url = `https://gnews.io/api/v4/search?q=${q}&lang=en&max=25&sortby=publishedAt&in=title,description&topic=health&apikey=${apiKey}`;
       const res = await fetch(url, { headers: { Accept: "application/json" } });
 
       if (!res.ok) {
@@ -45,11 +45,22 @@ export const getMaternalNews = createServerFn({ method: "GET" }).handler(
       const KEYWORDS = [
         "maternity", "maternal", "pregnan", "antenatal", "prenatal",
         "postnatal", "postpartum", "childbirth", "midwif", "obstetric",
-        "expecting mother", "expectant mother", "newborn", "labor ward", "labour ward",
+        "gynaecolog", "gynecolog", "newborn", "neonatal", "labor ward", "labour ward",
+        "expecting mother", "expectant mother", "mother and child", "maternal mortality",
+      ];
+      // Block celebrity / entertainment / gossip noise
+      const BLOCK = [
+        "celebrity", "celebrities", "kardashian", "jenner", "instagram", "tiktok",
+        "actress", "actor", "singer", "rapper", "model ", "reality star", "influencer",
+        "boyfriend", "girlfriend", "wedding", "engagement ring", "red carpet",
+        "bikini", "baby bump photo", "shows off", "flaunts", "stuns in",
+        "bollywood", "hollywood", "netflix", "movie", "film star", "tv star",
+        "royal", "prince ", "princess ", "duchess", "meghan", "harry",
       ];
       const articles: NewsItem[] = (json.articles || [])
         .filter((a) => {
           const text = `${a.title ?? ""} ${a.description ?? ""}`.toLowerCase();
+          if (BLOCK.some((b) => text.includes(b))) return false;
           return KEYWORDS.some((k) => text.includes(k));
         })
         .slice(0, 8)
