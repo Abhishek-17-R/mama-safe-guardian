@@ -17,8 +17,11 @@ export const getMaternalNews = createServerFn({ method: "GET" }).handler(
     }
 
     try {
-      const q = encodeURIComponent('"maternal health" OR pregnancy OR "antenatal care" OR "maternal mortality"');
-      const url = `https://gnews.io/api/v4/search?q=${q}&lang=en&max=8&sortby=publishedAt&apikey=${apiKey}`;
+      // Strictly maternity-focused query
+      const q = encodeURIComponent(
+        '"maternity" OR "maternal health" OR "pregnancy" OR "pregnant" OR "antenatal" OR "prenatal" OR "postnatal" OR "postpartum" OR "childbirth" OR "expecting mother"'
+      );
+      const url = `https://gnews.io/api/v4/search?q=${q}&lang=en&max=20&sortby=publishedAt&in=title,description&apikey=${apiKey}`;
       const res = await fetch(url, { headers: { Accept: "application/json" } });
 
       if (!res.ok) {
@@ -38,14 +41,26 @@ export const getMaternalNews = createServerFn({ method: "GET" }).handler(
         }>;
       };
 
-      const articles: NewsItem[] = (json.articles || []).map((a) => ({
-        title: a.title,
-        description: a.description,
-        url: a.url,
-        image: a.image,
-        source: a.source?.name ?? "Unknown",
-        publishedAt: a.publishedAt,
-      }));
+      // Whitelist filter: only keep articles whose title or description clearly mentions maternity topics
+      const KEYWORDS = [
+        "maternity", "maternal", "pregnan", "antenatal", "prenatal",
+        "postnatal", "postpartum", "childbirth", "midwif", "obstetric",
+        "expecting mother", "expectant mother", "newborn", "labor ward", "labour ward",
+      ];
+      const articles: NewsItem[] = (json.articles || [])
+        .filter((a) => {
+          const text = `${a.title ?? ""} ${a.description ?? ""}`.toLowerCase();
+          return KEYWORDS.some((k) => text.includes(k));
+        })
+        .slice(0, 8)
+        .map((a) => ({
+          title: a.title,
+          description: a.description,
+          url: a.url,
+          image: a.image,
+          source: a.source?.name ?? "Unknown",
+          publishedAt: a.publishedAt,
+        }));
 
       return { articles, error: null };
     } catch (err) {
