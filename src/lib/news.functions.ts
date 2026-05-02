@@ -45,11 +45,22 @@ export const getMaternalNews = createServerFn({ method: "GET" }).handler(
       const KEYWORDS = [
         "maternity", "maternal", "pregnan", "antenatal", "prenatal",
         "postnatal", "postpartum", "childbirth", "midwif", "obstetric",
-        "expecting mother", "expectant mother", "newborn", "labor ward", "labour ward",
+        "gynaecolog", "gynecolog", "newborn", "neonatal", "labor ward", "labour ward",
+        "expecting mother", "expectant mother", "mother and child", "maternal mortality",
+      ];
+      // Block celebrity / entertainment / gossip noise
+      const BLOCK = [
+        "celebrity", "celebrities", "kardashian", "jenner", "instagram", "tiktok",
+        "actress", "actor", "singer", "rapper", "model ", "reality star", "influencer",
+        "boyfriend", "girlfriend", "wedding", "engagement ring", "red carpet",
+        "bikini", "baby bump photo", "shows off", "flaunts", "stuns in",
+        "bollywood", "hollywood", "netflix", "movie", "film star", "tv star",
+        "royal", "prince ", "princess ", "duchess", "meghan", "harry",
       ];
       const articles: NewsItem[] = (json.articles || [])
         .filter((a) => {
           const text = `${a.title ?? ""} ${a.description ?? ""}`.toLowerCase();
+          if (BLOCK.some((b) => text.includes(b))) return false;
           return KEYWORDS.some((k) => text.includes(k));
         })
         .slice(0, 8)
