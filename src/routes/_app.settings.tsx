@@ -162,6 +162,71 @@ function SettingsPage() {
             </div>
           </form>
 
+          <section className="lg:col-span-2 space-y-6 rounded-3xl border border-border/60 bg-card p-6">
+            <div className="flex items-center gap-2 border-b border-border/60 pb-4">
+              <Sliders className="h-4 w-4 text-primary" />
+              <div>
+                <h2 className="font-display text-lg font-semibold">Preferences</h2>
+                <p className="text-xs text-muted-foreground">Customize your app experience.</p>
+              </div>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2">
+              <PrefRow label="Language" hint="App display language">
+                <Select value={prefs.language} onValueChange={(v) => updatePref("language", v as Language)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="kn">ಕನ್ನಡ (Kannada)</SelectItem>
+                    <SelectItem value="hi">हिन्दी (Hindi)</SelectItem>
+                    <SelectItem value="te">తెలుగు (Telugu)</SelectItem>
+                    <SelectItem value="ta">தமிழ் (Tamil)</SelectItem>
+                    <SelectItem value="ml">മലയാളം (Malayalam)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </PrefRow>
+
+              <PrefRow label="Theme" hint="Light or dark mode">
+                <Select value={prefs.theme} onValueChange={(v) => updatePref("theme", v as Theme)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                  </SelectContent>
+                </Select>
+              </PrefRow>
+
+              <PrefRow label="Units" hint="Measurement system">
+                <Select value={prefs.units} onValueChange={(v) => updatePref("units", v as Units)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="metric">Metric (kg, cm)</SelectItem>
+                    <SelectItem value="imperial">Imperial (lb, in)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </PrefRow>
+
+              <PrefRow label="Font size" hint="Adjust text size">
+                <Select value={prefs.fontSize} onValueChange={(v) => updatePref("fontSize", v as FontSize)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="small">Small</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="large">Large</SelectItem>
+                  </SelectContent>
+                </Select>
+              </PrefRow>
+
+              <div className="sm:col-span-2 flex items-center justify-between rounded-xl border border-border/60 p-3">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Notifications</p>
+                  <p className="text-xs text-muted-foreground">Receive reminders and updates.</p>
+                </div>
+                <Switch checked={prefs.notifications} onCheckedChange={(v) => updatePref("notifications", v)} />
+              </div>
+            </div>
+          </section>
+
           <aside className="rounded-3xl border border-border/60 bg-card p-6">
             <div className="mb-4 flex items-center gap-2 border-b border-border/60 pb-4">
               <HistoryIcon className="h-4 w-4 text-primary" />
