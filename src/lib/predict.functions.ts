@@ -191,7 +191,17 @@ const ChatInput = z.object({
     role: z.enum(["user", "assistant"]),
     content: z.string().min(1).max(4000),
   })).min(1).max(50),
+  language: z.enum(["en", "kn", "hi", "te", "ta", "ml"]).default("en"),
 });
+
+const LANG_NAMES: Record<string, string> = {
+  en: "English",
+  kn: "Kannada (ಕನ್ನಡ)",
+  hi: "Hindi (हिन्दी)",
+  te: "Telugu (తెలుగు)",
+  ta: "Tamil (தமிழ்)",
+  ml: "Malayalam (മലയാളം)",
+};
 
 export const chatWithAI = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -200,10 +210,13 @@ export const chatWithAI = createServerFn({ method: "POST" })
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
 
+    const langName = LANG_NAMES[data.language] ?? "English";
     const systemPrompt = `You are MatriCare's compassionate pregnancy assistant. You help expecting mothers with:
 - General pregnancy questions (nutrition, exercise, symptoms, trimester guidance)
 - Understanding maternal health vitals (BP, blood sugar, BMI, hemoglobin)
 - When to consult a doctor
+
+LANGUAGE: Always reply in ${langName}. Use the native script for that language. Medical/clinical terms may stay in English in parentheses if helpful. If the user writes in another language, still answer in ${langName} unless they explicitly request otherwise.
 
 Guidelines:
 - Be warm, supportive, and easy to understand. Use simple language.
