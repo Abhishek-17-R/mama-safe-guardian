@@ -297,3 +297,15 @@ function Field({ label, id, children, className }: { label: string; id: string; 
     </div>
   );
 }
+
+function PrefRow({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1.5">
+      <div>
+        <p className="text-sm font-medium text-foreground">{label}</p>
+        {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+      </div>
+      {children}
+    </div>
+  );
+}
