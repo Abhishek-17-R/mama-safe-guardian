@@ -46,6 +46,14 @@ function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [reports, setReports] = useState<PredictionRow[] | null>(null);
+  const [prefs, setPrefs] = useState<Preferences>(() => loadPreferences());
+
+  const updatePref = <K extends keyof Preferences>(key: K, value: Preferences[K]) => {
+    const next = { ...prefs, [key]: value };
+    setPrefs(next);
+    savePreferences(next);
+    toast.success("Preference saved");
+  };
 
   useEffect(() => {
     if (!user) return;
