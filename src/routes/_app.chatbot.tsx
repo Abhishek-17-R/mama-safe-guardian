@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { chatWithAI } from "@/lib/predict.functions";
+import { loadPreferences } from "@/lib/preferences";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/chatbot")({
