@@ -1,13 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Settings as SettingsIcon, Save, Loader2, User, History as HistoryIcon, FileText, CheckCircle2, AlertTriangle, AlertCircle } from "lucide-react";
+import { Settings as SettingsIcon, Save, Loader2, User, History as HistoryIcon, FileText, CheckCircle2, AlertTriangle, AlertCircle, Sliders } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
+import { loadPreferences, savePreferences, type Preferences, type Language, type Theme, type Units, type FontSize } from "@/lib/preferences";
 
 export const Route = createFileRoute("/_app/settings")({
   head: () => ({ meta: [{ title: "Settings — MatriCare" }] }),
