@@ -42,7 +42,7 @@ function ChatbotPage() {
     setInput("");
     setSending(true);
     try {
-      const { reply } = await chatFn({ data: { messages: next } });
+      const { reply } = await chatFn({ data: { messages: next, language: loadPreferences().language } });
       setMessages([...next, { role: "assistant", content: reply }]);
     } catch (e) {
       console.error(e);
