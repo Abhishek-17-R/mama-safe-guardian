@@ -229,8 +229,7 @@ export const chatWithAI = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => ChatInput.parse(input))
   .handler(async ({ data }) => {
-    const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
+    const { endpoint, headers } = getAIEndpoint();
 
     const langName = LANG_NAMES[data.language] ?? "English";
     const systemPrompt = `You are MatriCare's compassionate pregnancy assistant. You help expecting mothers with:
