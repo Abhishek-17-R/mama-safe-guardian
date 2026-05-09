@@ -3,6 +3,35 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { predictRisk } from "@/lib/ml/predict.server";
 
+// Returns endpoint + headers for AI calls.
+// Prefers Lovable AI Gateway (LOVABLE_API_KEY, available on deployed Lovable),
+// falls back to direct Google Gemini (GEMINI_API_KEY) for local/VS Code runs.
+function getAIEndpoint(): {
+  endpoint: string;
+  headers: Record<string, string>;
+  model: string;
+} {
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  if (lovableKey) {
+    return {
+      endpoint: "https://ai.gateway.lovable.dev/v1/chat/completions",
+      headers: { Authorization: `Bearer ${lovableKey}`, "Content-Type": "application/json" },
+      model: "google/gemini-2.5-flash",
+    };
+  }
+  const geminiKey = process.env.GEMINI_API_KEY;
+  if (geminiKey) {
+    return {
+      endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+      headers: { Authorization: `Bearer ${geminiKey}`, "Content-Type": "application/json" },
+      model: "gemini-2.5-flash",
+    };
+  }
+  throw new Error(
+    "No AI key configured. Set LOVABLE_API_KEY (Lovable) or GEMINI_API_KEY (local, from https://aistudio.google.com/apikey) in .env.local"
+  );
+}
+
 // ===== AI PDF EXTRACTION =====
 const ExtractInput = z.object({
   pdfBase64: z.string().min(10).max(15_000_000),
@@ -39,8 +68,7 @@ export const extractFromPdf = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => ExtractInput.parse(input))
   .handler(async ({ data }) => {
-    const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
+    const { endpoint, headers, model } = getAIEndpoint();
 
     const systemPrompt = `You are a clinical data extractor for MATERNAL health reports (the pregnant mother — NEVER the fetus).
 Extract these fields. Reports vary wildly: typed, scanned, handwritten, tabular, ultrasound reports, lab printouts. Be tolerant and infer sensibly.
@@ -66,11 +94,11 @@ Fields:
 - diabetes (1 if mother has diabetes / gestational diabetes, else 0; null if unknown)
 - prev_complications (1 if previous pregnancy complications, prior C-section, or parity issues mentioned, else 0; null if unknown)`;
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const res = await fetch(endpoint, {
       method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model,
         messages: [
           { role: "system", content: systemPrompt },
           {
@@ -207,8 +235,7 @@ export const chatWithAI = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => ChatInput.parse(input))
   .handler(async ({ data }) => {
-    const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
+    const { endpoint, headers, model } = getAIEndpoint();
 
     const langName = LANG_NAMES[data.language] ?? "English";
     const systemPrompt = `You are MatriCare's compassionate pregnancy assistant. You help expecting mothers with:
@@ -225,11 +252,11 @@ Guidelines:
 - Use markdown for clarity (bold, bullet points). Keep replies concise (under 250 words).
 - If asked something outside pregnancy/maternal health, gently redirect.`;
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const res = await fetch(endpoint, {
       method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model,
         messages: [{ role: "system", content: systemPrompt }, ...data.messages],
       }),
     });
