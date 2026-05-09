@@ -256,7 +256,7 @@ Guidelines:
       method: "POST",
       headers,
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model,
         messages: [{ role: "system", content: systemPrompt }, ...data.messages],
       }),
     });
