@@ -235,7 +235,7 @@ export const chatWithAI = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => ChatInput.parse(input))
   .handler(async ({ data }) => {
-    const { endpoint, headers } = getAIEndpoint();
+    const { endpoint, headers, model } = getAIEndpoint();
 
     const langName = LANG_NAMES[data.language] ?? "English";
     const systemPrompt = `You are MatriCare's compassionate pregnancy assistant. You help expecting mothers with:
