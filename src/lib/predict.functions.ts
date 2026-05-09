@@ -246,9 +246,9 @@ Guidelines:
 - Use markdown for clarity (bold, bullet points). Keep replies concise (under 250 words).
 - If asked something outside pregnancy/maternal health, gently redirect.`;
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const res = await fetch(endpoint, {
       method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [{ role: "system", content: systemPrompt }, ...data.messages],
