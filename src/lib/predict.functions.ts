@@ -88,9 +88,9 @@ Fields:
 - diabetes (1 if mother has diabetes / gestational diabetes, else 0; null if unknown)
 - prev_complications (1 if previous pregnancy complications, prior C-section, or parity issues mentioned, else 0; null if unknown)`;
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const res = await fetch(endpoint, {
       method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [
