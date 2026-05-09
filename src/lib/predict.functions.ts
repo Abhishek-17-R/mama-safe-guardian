@@ -6,12 +6,17 @@ import { predictRisk } from "@/lib/ml/predict.server";
 // Returns endpoint + headers for AI calls.
 // Prefers Lovable AI Gateway (LOVABLE_API_KEY, available on deployed Lovable),
 // falls back to direct Google Gemini (GEMINI_API_KEY) for local/VS Code runs.
-function getAIEndpoint(): { endpoint: string; headers: Record<string, string> } {
+function getAIEndpoint(): {
+  endpoint: string;
+  headers: Record<string, string>;
+  model: string;
+} {
   const lovableKey = process.env.LOVABLE_API_KEY;
   if (lovableKey) {
     return {
       endpoint: "https://ai.gateway.lovable.dev/v1/chat/completions",
       headers: { Authorization: `Bearer ${lovableKey}`, "Content-Type": "application/json" },
+      model: "google/gemini-2.5-flash",
     };
   }
   const geminiKey = process.env.GEMINI_API_KEY;
@@ -19,6 +24,7 @@ function getAIEndpoint(): { endpoint: string; headers: Record<string, string> } 
     return {
       endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
       headers: { Authorization: `Bearer ${geminiKey}`, "Content-Type": "application/json" },
+      model: "gemini-2.5-flash",
     };
   }
   throw new Error(
