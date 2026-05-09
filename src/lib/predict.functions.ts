@@ -3,6 +3,29 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { predictRisk } from "@/lib/ml/predict.server";
 
+// Returns endpoint + headers for AI calls.
+// Prefers Lovable AI Gateway (LOVABLE_API_KEY, available on deployed Lovable),
+// falls back to direct Google Gemini (GEMINI_API_KEY) for local/VS Code runs.
+function getAIEndpoint(): { endpoint: string; headers: Record<string, string> } {
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  if (lovableKey) {
+    return {
+      endpoint: "https://ai.gateway.lovable.dev/v1/chat/completions",
+      headers: { Authorization: `Bearer ${lovableKey}`, "Content-Type": "application/json" },
+    };
+  }
+  const geminiKey = process.env.GEMINI_API_KEY;
+  if (geminiKey) {
+    return {
+      endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+      headers: { Authorization: `Bearer ${geminiKey}`, "Content-Type": "application/json" },
+    };
+  }
+  throw new Error(
+    "No AI key configured. Set LOVABLE_API_KEY (Lovable) or GEMINI_API_KEY (local, from https://aistudio.google.com/apikey) in .env.local"
+  );
+}
+
 // ===== AI PDF EXTRACTION =====
 const ExtractInput = z.object({
   pdfBase64: z.string().min(10).max(15_000_000),
