@@ -68,7 +68,7 @@ export const extractFromPdf = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => ExtractInput.parse(input))
   .handler(async ({ data }) => {
-    const { endpoint, headers } = getAIEndpoint();
+    const { endpoint, headers, model } = getAIEndpoint();
 
     const systemPrompt = `You are a clinical data extractor for MATERNAL health reports (the pregnant mother — NEVER the fetus).
 Extract these fields. Reports vary wildly: typed, scanned, handwritten, tabular, ultrasound reports, lab printouts. Be tolerant and infer sensibly.
