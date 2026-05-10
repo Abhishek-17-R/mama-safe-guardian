@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppSchemesRouteImport } from './routes/_app.schemes'
 import { Route as AppPredictRouteImport } from './routes/_app.predict'
+import { Route as AppInsightsRouteImport } from './routes/_app.insights'
 import { Route as AppHistoryRouteImport } from './routes/_app.history'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppChatbotRouteImport } from './routes/_app.chatbot'
@@ -66,6 +67,11 @@ const AppPredictRoute = AppPredictRouteImport.update({
   path: '/predict',
   getParentRoute: () => AppRoute,
 } as any)
+const AppInsightsRoute = AppInsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppHistoryRoute = AppHistoryRouteImport.update({
   id: '/history',
   path: '/history',
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/chatbot': typeof AppChatbotRoute
   '/dashboard': typeof AppDashboardRoute
   '/history': typeof AppHistoryRoute
+  '/insights': typeof AppInsightsRoute
   '/predict': typeof AppPredictRoute
   '/schemes': typeof AppSchemesRoute
   '/settings': typeof AppSettingsRoute
@@ -104,6 +111,7 @@ export interface FileRoutesByTo {
   '/chatbot': typeof AppChatbotRoute
   '/dashboard': typeof AppDashboardRoute
   '/history': typeof AppHistoryRoute
+  '/insights': typeof AppInsightsRoute
   '/predict': typeof AppPredictRoute
   '/schemes': typeof AppSchemesRoute
   '/settings': typeof AppSettingsRoute
@@ -119,6 +127,7 @@ export interface FileRoutesById {
   '/_app/chatbot': typeof AppChatbotRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/history': typeof AppHistoryRoute
+  '/_app/insights': typeof AppInsightsRoute
   '/_app/predict': typeof AppPredictRoute
   '/_app/schemes': typeof AppSchemesRoute
   '/_app/settings': typeof AppSettingsRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/chatbot'
     | '/dashboard'
     | '/history'
+    | '/insights'
     | '/predict'
     | '/schemes'
     | '/settings'
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/chatbot'
     | '/dashboard'
     | '/history'
+    | '/insights'
     | '/predict'
     | '/schemes'
     | '/settings'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/_app/chatbot'
     | '/_app/dashboard'
     | '/_app/history'
+    | '/_app/insights'
     | '/_app/predict'
     | '/_app/schemes'
     | '/_app/settings'
@@ -240,6 +252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPredictRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/insights': {
+      id: '/_app/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof AppInsightsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/history': {
       id: '/_app/history'
       path: '/history'
@@ -268,6 +287,7 @@ interface AppRouteChildren {
   AppChatbotRoute: typeof AppChatbotRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppHistoryRoute: typeof AppHistoryRoute
+  AppInsightsRoute: typeof AppInsightsRoute
   AppPredictRoute: typeof AppPredictRoute
   AppSchemesRoute: typeof AppSchemesRoute
   AppSettingsRoute: typeof AppSettingsRoute
@@ -277,6 +297,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppChatbotRoute: AppChatbotRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppHistoryRoute: AppHistoryRoute,
+  AppInsightsRoute: AppInsightsRoute,
   AppPredictRoute: AppPredictRoute,
   AppSchemesRoute: AppSchemesRoute,
   AppSettingsRoute: AppSettingsRoute,
@@ -295,12 +316,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
