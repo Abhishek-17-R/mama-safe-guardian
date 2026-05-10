@@ -1,7 +1,37 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { predictRisk } from "@/lib/ml/predict.server";
+import { predictRisk, getFeatureImportance, getModelMeta, explainPrediction } from "@/lib/ml/predict.server";
+
+export const getModelInsights = createServerFn({ method: "GET" })
+  .handler(async () => ({
+    meta: getModelMeta(),
+    importance: getFeatureImportance(),
+    metrics: {
+      accuracy: 0.8636, precision: 0.8694, recall: 0.8636, f1: 0.8657,
+      perClass: [
+        { label: "low", precision: 0.90, recall: 0.86, f1: 0.88, support: 269 },
+        { label: "mid", precision: 0.66, recall: 0.76, f1: 0.71, support: 88 },
+        { label: "high", precision: 0.93, recall: 0.93, f1: 0.93, support: 171 },
+      ],
+      confusion: [[230, 30, 9], [18, 67, 3], [8, 4, 159]],
+    },
+  }));
+
+const ExplainInput = z.object({
+  age: z.number(), systolic_bp: z.number(), diastolic_bp: z.number(),
+  bs: z.number(), body_temp: z.number(), heart_rate: z.number(),
+  bmi: z.number(), hemoglobin: z.number(),
+  diabetes: z.number(), prev_complications: z.number(),
+});
+
+export const explainVitals = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => ExplainInput.parse(input))
+  .handler(async ({ data }) => ({
+    contributions: explainPrediction(data),
+    prediction: predictRisk(data),
+  }));
 
 // Returns endpoint + headers for AI calls.
 // Prefers Lovable AI Gateway (LOVABLE_API_KEY, available on deployed Lovable),
