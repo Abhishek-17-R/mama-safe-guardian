@@ -167,12 +167,19 @@ function Landing() {
       </section>
 
       <footer className="border-t border-border/50 py-10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 text-sm text-muted-foreground sm:flex-row">
-          <div className="flex items-center gap-2">
-            <Heart className="h-4 w-4 text-primary" fill="currentColor" />
-            <span>© {new Date().getFullYear()} MatriCare. Made with care.</span>
+        <div className="mx-auto max-w-7xl space-y-4 px-6 text-sm text-muted-foreground">
+          <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:justify-between sm:text-left">
+            <div className="flex items-center gap-2">
+              <Heart className="h-4 w-4 text-primary" fill="currentColor" />
+              <span>© {new Date().getFullYear()} MatriCare. Made with care.</span>
+            </div>
+            <span>Not a substitute for medical advice.</span>
           </div>
-          <span>Not a substitute for medical advice.</span>
+          <div className="border-t border-border/40 pt-4 text-center">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground/70">Built by</p>
+            <p className="mt-1 font-display text-foreground">Nirupam N Revankar &middot; Abhishek R</p>
+            <p className="mt-1 text-xs">Under the guidance of <span className="text-foreground">Prof. Gannavaram Sridhar</span></p>
+          </div>
         </div>
       </footer>
     </div>
