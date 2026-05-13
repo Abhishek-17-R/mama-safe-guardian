@@ -65,11 +65,18 @@ function extractSource(descriptionText: string, fallback: string): string {
 
 export const getMaternalNews = createServerFn({ method: "GET" }).handler(
   async (): Promise<{ articles: NewsItem[]; error: string | null }> => {
-    // Google News RSS — no API key required, works locally and in production.
-    const query = encodeURIComponent(
-      '("maternal health" OR "pregnancy" OR "antenatal" OR "postpartum" OR "childbirth" OR "midwifery") -celebrity -kardashian -bollywood',
-    );
-    const url = `https://news.google.com/rss/search?q=${query}+when:14d&hl=en-US&gl=US&ceid=US:en`;
+    // Verified-source allowlist: official health bodies + reputable medical publishers.
+    // We bias the query to these domains and filter results post-fetch as a safety net.
+    const VERIFIED_DOMAINS = [
+      "who.int", "cdc.gov", "nhs.uk", "unicef.org", "mayoclinic.org", "aap.org",
+      "bmj.com", "thelancet.com", "reuters.com", "apnews.com",
+      "nih.gov", "nichd.nih.gov", "acog.org", "marchofdimes.org",
+    ];
+    const siteFilter = VERIFIED_DOMAINS.map((d) => `site:${d}`).join(" OR ");
+    const topics =
+      '("maternal health" OR "maternity" OR "pregnancy" OR "antenatal" OR "postpartum" OR "newborn" OR "baby" OR "infant" OR "child health")';
+    const query = encodeURIComponent(`${topics} (${siteFilter})`);
+    const url = `https://news.google.com/rss/search?q=${query}+when:30d&hl=en-US&gl=US&ceid=US:en`;
 
     try {
       const res = await fetch(url, {
@@ -88,19 +95,17 @@ export const getMaternalNews = createServerFn({ method: "GET" }).handler(
       const xml = await res.text();
       const itemBlocks = xml.match(/<item[\s\S]*?<\/item>/g) ?? [];
 
-      // Block obvious noise even though Google News query already excludes some.
-      const BLOCK = [
-        "celebrity", "celebrities", "kardashian", "jenner", "instagram", "tiktok",
-        "actress", "actor", "singer", "rapper", "reality star", "influencer",
-        "boyfriend", "girlfriend", "engagement ring", "red carpet",
-        "bikini", "baby bump photo", "shows off", "flaunts", "stuns in",
-        "bollywood", "hollywood", "netflix", "royal", "duchess", "meghan",
-      ];
+      // Hard filters: must match a maternity/baby/health topic and a verified domain.
       const KEYWORDS = [
         "maternity", "maternal", "pregnan", "antenatal", "prenatal",
         "postnatal", "postpartum", "childbirth", "midwif", "obstetric",
-        "gynaecolog", "gynecolog", "newborn", "neonatal", "labor ward", "labour ward",
-        "expecting mother", "expectant mother", "mother and child", "maternal mortality",
+        "newborn", "neonatal", "infant", "baby", "babies", "breastfeed",
+        "vaccine", "immuniz", "nutrition", "wellness", "health",
+      ];
+      const BLOCK = [
+        "celebrity", "kardashian", "jenner", "bollywood", "hollywood",
+        "red carpet", "baby bump photo", "shows off", "flaunts", "stuns in",
+        "instagram", "tiktok", "reality star", "influencer",
       ];
 
       const articles: NewsItem[] = [];
@@ -117,12 +122,20 @@ export const getMaternalNews = createServerFn({ method: "GET" }).handler(
         if (BLOCK.some((b) => text.includes(b))) continue;
         if (!KEYWORDS.some((k) => text.includes(k))) continue;
 
+        // Verify the article links to one of our trusted domains.
+        const linkLower = link.toLowerCase();
+        const sourceLower = sourceTag.toLowerCase();
+        const isVerified =
+          VERIFIED_DOMAINS.some((d) => linkLower.includes(d)) ||
+          VERIFIED_DOMAINS.some((d) => sourceLower.includes(d.split(".")[0]));
+        if (!isVerified) continue;
+
         articles.push({
           title,
           description: descriptionText.slice(0, 240),
           url: link,
           image: extractImage(block),
-          source: sourceTag || extractSource(descriptionText, "Google News"),
+          source: sourceTag || extractSource(descriptionText, "Verified source"),
           publishedAt: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
         });
         if (articles.length >= 8) break;
