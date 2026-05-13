@@ -100,7 +100,7 @@ function NewsColumn({ articles, error, t }: { articles: NewsItem[]; error: strin
       )}
 
       {!error && articles.length === 0 && (
-        <p className="text-sm text-muted-foreground">No recent news available.</p>
+        <p className="text-sm text-muted-foreground">{t("dashboard.noNews")}</p>
       )}
 
       <ul className="space-y-4">
