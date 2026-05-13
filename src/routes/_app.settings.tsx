@@ -248,9 +248,9 @@ function SettingsPage() {
             <ul className="space-y-3">
               {reports?.map((r) => {
                 const meta = {
-                  low: { Icon: CheckCircle2, label: "Low", color: "text-success", bg: "bg-success/10" },
-                  mid: { Icon: AlertTriangle, label: "Moderate", color: "text-warning", bg: "bg-warning/10" },
-                  high: { Icon: AlertCircle, label: "High", color: "text-destructive", bg: "bg-destructive/10" },
+                  low: { Icon: CheckCircle2, label: t("risk.low"), color: "text-success", bg: "bg-success/10" },
+                  mid: { Icon: AlertTriangle, label: t("risk.mid"), color: "text-warning", bg: "bg-warning/10" },
+                  high: { Icon: AlertCircle, label: t("risk.high"), color: "text-destructive", bg: "bg-destructive/10" },
                 }[r.risk_level];
                 const Icon = meta.Icon;
                 return (
@@ -281,7 +281,7 @@ function SettingsPage() {
 
             {reports && reports.length > 0 && (
               <Button asChild variant="outline" size="sm" className="mt-4 w-full">
-                <Link to="/history">View all reports</Link>
+                <Link to="/history">{t("settings.viewAllReports")}</Link>
               </Button>
             )}
           </aside>
