@@ -48,9 +48,23 @@ function Landing() {
         <div className="absolute inset-0 bg-[image:var(--gradient-hero)] pointer-events-none" />
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2 lg:py-28">
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              Powered by AI · 86%+ accuracy
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+                <Sparkles className="h-3.5 w-3.5" />
+                86.4% accuracy
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-success/20 bg-success/5 px-3 py-1 text-xs font-medium text-success">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                Private & secure
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1 text-xs font-medium text-foreground">
+                <Activity className="h-3.5 w-3.5 text-primary" />
+                1,200+ records trained
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1 text-xs font-medium text-foreground">
+                <FileText className="h-3.5 w-3.5 text-primary" />
+                F1 0.87 · Recall 0.86
+              </div>
             </div>
             <h1 className="font-display text-5xl font-semibold leading-[1.05] text-foreground sm:text-6xl lg:text-7xl">
               Safer pregnancies,<br />
@@ -168,17 +182,26 @@ function Landing() {
 
       <footer className="border-t border-border/50 py-10">
         <div className="mx-auto max-w-7xl space-y-4 px-6 text-sm text-muted-foreground">
-          <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:justify-between sm:text-left">
-            <div className="flex items-center gap-2">
-              <Heart className="h-4 w-4 text-primary" fill="currentColor" />
-              <span>© {new Date().getFullYear()} MatriCare. Made with care.</span>
-            </div>
-            <span>Not a substitute for medical advice.</span>
+          <div className="flex items-center justify-center gap-2 text-center">
+            <Heart className="h-4 w-4 text-primary" fill="currentColor" />
+            <span>© {new Date().getFullYear()} MatriCare.</span>
           </div>
-          <div className="border-t border-border/40 pt-4 text-center">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground/70">Built by</p>
-            <p className="mt-1 font-display text-foreground">Nirupam N Revankar &middot; Abhishek R</p>
-            <p className="mt-1 text-xs">Under the guidance of <span className="text-foreground">Prof. Gannavaram Sridhar</span></p>
+          <div className="border-t border-border/40 pt-6 text-center">
+            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground/80">Built by</p>
+            <div className="mt-3 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-2xl border border-border/60 bg-card p-4">
+                <p className="font-display text-lg font-semibold text-foreground">Nirupam N Revankar</p>
+                <p className="mt-1 text-sm text-muted-foreground">ML model · Risk prediction engine · Backend</p>
+              </div>
+              <div className="rounded-2xl border border-border/60 bg-card p-4">
+                <p className="font-display text-lg font-semibold text-foreground">Abhishek R</p>
+                <p className="mt-1 text-sm text-muted-foreground">Frontend · UI/UX · AI report reader integration</p>
+              </div>
+            </div>
+            <p className="mt-5 text-base">
+              Under the guidance of{" "}
+              <span className="font-display font-semibold text-foreground">Prof. Gannavaram Sridhar</span>
+            </p>
           </div>
         </div>
       </footer>
