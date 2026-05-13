@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Settings as SettingsIcon, Save, Loader2, User, History as HistoryIcon, FileText, CheckCircle2, AlertTriangle, AlertCircle, Sliders } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,7 @@ interface PredictionRow {
 
 function SettingsPage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [form, setForm] = useState<ProfileForm>({
     full_name: "", date_of_birth: "", age: "", address: "", phone: "", email: "",
   });
@@ -52,7 +54,7 @@ function SettingsPage() {
     const next = { ...prefs, [key]: value };
     setPrefs(next);
     savePreferences(next);
-    toast.success("Preference saved");
+    toast.success(t("settings.prefSaved"));
   };
 
   useEffect(() => {
@@ -106,7 +108,7 @@ function SettingsPage() {
     });
     setSaving(false);
     if (error) return toast.error(error.message);
-    toast.success("Profile saved");
+    toast.success(t("settings.profileSaved"));
   };
 
   return (
@@ -116,40 +118,40 @@ function SettingsPage() {
           <SettingsIcon className="h-5 w-5" />
         </div>
         <div>
-          <h1 className="font-display text-3xl font-semibold text-foreground">Settings</h1>
-          <p className="text-sm text-muted-foreground">Manage your personal details and view your reports.</p>
+          <h1 className="font-display text-3xl font-semibold text-foreground">{t("settings.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("settings.subtitle")}</p>
         </div>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-20 text-muted-foreground">
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Loading...
+          <Loader2 className="mr-2 h-5 w-5 animate-spin" /> {t("common.loading")}
         </div>
       ) : (
         <div className="grid gap-8 lg:grid-cols-3">
           <form onSubmit={handleSave} className="lg:col-span-2 space-y-6 rounded-3xl border border-border/60 bg-card p-6">
             <div className="flex items-center gap-2 border-b border-border/60 pb-4">
               <User className="h-4 w-4 text-primary" />
-              <h2 className="font-display text-lg font-semibold">Personal details</h2>
+              <h2 className="font-display text-lg font-semibold">{t("settings.personal")}</h2>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Full name" id="full_name">
+              <Field label={t("settings.fullName")} id="full_name">
                 <Input id="full_name" value={form.full_name} onChange={(e) => handleChange("full_name", e.target.value)} placeholder="Jane Doe" maxLength={100} />
               </Field>
-              <Field label="Date of birth" id="dob">
+              <Field label={t("settings.dob")} id="dob">
                 <Input id="dob" type="date" value={form.date_of_birth} onChange={(e) => handleChange("date_of_birth", e.target.value)} />
               </Field>
-              <Field label="Age" id="age">
+              <Field label={t("settings.age")} id="age">
                 <Input id="age" type="number" min={0} max={120} value={form.age} onChange={(e) => handleChange("age", e.target.value)} placeholder="28" />
               </Field>
-              <Field label="Phone" id="phone">
+              <Field label={t("settings.phone")} id="phone">
                 <Input id="phone" type="tel" value={form.phone} onChange={(e) => handleChange("phone", e.target.value)} placeholder="+1 555 123 4567" maxLength={20} />
               </Field>
-              <Field label="Email" id="email">
+              <Field label={t("settings.email")} id="email">
                 <Input id="email" type="email" value={form.email} onChange={(e) => handleChange("email", e.target.value)} placeholder="you@example.com" maxLength={255} />
               </Field>
-              <Field label="Address" id="address" className="sm:col-span-2">
+              <Field label={t("settings.address")} id="address" className="sm:col-span-2">
                 <Textarea id="address" value={form.address} onChange={(e) => handleChange("address", e.target.value)} placeholder="Street, City, State, ZIP" rows={3} maxLength={500} />
               </Field>
             </div>
@@ -157,7 +159,7 @@ function SettingsPage() {
             <div className="flex justify-end pt-2">
               <Button type="submit" disabled={saving} className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-soft)]">
                 {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                Save changes
+                {t("common.saveChanges")}
               </Button>
             </div>
           </form>
@@ -166,13 +168,13 @@ function SettingsPage() {
             <div className="flex items-center gap-2 border-b border-border/60 pb-4">
               <Sliders className="h-4 w-4 text-primary" />
               <div>
-                <h2 className="font-display text-lg font-semibold">Preferences</h2>
-                <p className="text-xs text-muted-foreground">Customize your app experience.</p>
+                <h2 className="font-display text-lg font-semibold">{t("settings.preferences")}</h2>
+                <p className="text-xs text-muted-foreground">{t("settings.prefsHint")}</p>
               </div>
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
-              <PrefRow label="Language" hint="App display language">
+              <PrefRow label={t("settings.language")} hint={t("settings.languageHint")}>
                 <Select value={prefs.language} onValueChange={(v) => updatePref("language", v as Language)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -186,41 +188,41 @@ function SettingsPage() {
                 </Select>
               </PrefRow>
 
-              <PrefRow label="Theme" hint="Light or dark mode">
+              <PrefRow label={t("settings.theme")} hint={t("settings.themeHint")}>
                 <Select value={prefs.theme} onValueChange={(v) => updatePref("theme", v as Theme)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="light">Light</SelectItem>
-                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="light">{t("settings.light")}</SelectItem>
+                    <SelectItem value="dark">{t("settings.dark")}</SelectItem>
                   </SelectContent>
                 </Select>
               </PrefRow>
 
-              <PrefRow label="Units" hint="Measurement system">
+              <PrefRow label={t("settings.units")} hint={t("settings.unitsHint")}>
                 <Select value={prefs.units} onValueChange={(v) => updatePref("units", v as Units)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="metric">Metric (kg, cm)</SelectItem>
-                    <SelectItem value="imperial">Imperial (lb, in)</SelectItem>
+                    <SelectItem value="metric">{t("settings.metric")}</SelectItem>
+                    <SelectItem value="imperial">{t("settings.imperial")}</SelectItem>
                   </SelectContent>
                 </Select>
               </PrefRow>
 
-              <PrefRow label="Font size" hint="Adjust text size">
+              <PrefRow label={t("settings.fontSize")} hint={t("settings.fontSizeHint")}>
                 <Select value={prefs.fontSize} onValueChange={(v) => updatePref("fontSize", v as FontSize)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="small">Small</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="large">Large</SelectItem>
+                    <SelectItem value="small">{t("settings.small")}</SelectItem>
+                    <SelectItem value="medium">{t("settings.medium")}</SelectItem>
+                    <SelectItem value="large">{t("settings.large")}</SelectItem>
                   </SelectContent>
                 </Select>
               </PrefRow>
 
               <div className="sm:col-span-2 flex items-center justify-between rounded-xl border border-border/60 p-3">
                 <div>
-                  <p className="text-sm font-medium text-foreground">Notifications</p>
-                  <p className="text-xs text-muted-foreground">Receive reminders and updates.</p>
+                  <p className="text-sm font-medium text-foreground">{t("settings.notifications")}</p>
+                  <p className="text-xs text-muted-foreground">{t("settings.notificationsHint")}</p>
                 </div>
                 <Switch checked={prefs.notifications} onCheckedChange={(v) => updatePref("notifications", v)} />
               </div>
@@ -230,15 +232,15 @@ function SettingsPage() {
           <aside className="rounded-3xl border border-border/60 bg-card p-6">
             <div className="mb-4 flex items-center gap-2 border-b border-border/60 pb-4">
               <HistoryIcon className="h-4 w-4 text-primary" />
-              <h2 className="font-display text-lg font-semibold">Recent reports</h2>
+              <h2 className="font-display text-lg font-semibold">{t("settings.recentReports")}</h2>
             </div>
 
             {reports && reports.length === 0 && (
               <div className="rounded-2xl border border-dashed border-border p-6 text-center">
                 <FileText className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">No reports yet.</p>
+                <p className="text-sm text-muted-foreground">{t("settings.noReports")}</p>
                 <Button asChild size="sm" className="mt-3" variant="outline">
-                  <Link to="/predict">Start one</Link>
+                  <Link to="/predict">{t("common.startOne")}</Link>
                 </Button>
               </div>
             )}
@@ -246,9 +248,9 @@ function SettingsPage() {
             <ul className="space-y-3">
               {reports?.map((r) => {
                 const meta = {
-                  low: { Icon: CheckCircle2, label: "Low", color: "text-success", bg: "bg-success/10" },
-                  mid: { Icon: AlertTriangle, label: "Moderate", color: "text-warning", bg: "bg-warning/10" },
-                  high: { Icon: AlertCircle, label: "High", color: "text-destructive", bg: "bg-destructive/10" },
+                  low: { Icon: CheckCircle2, label: t("risk.low"), color: "text-success", bg: "bg-success/10" },
+                  mid: { Icon: AlertTriangle, label: t("risk.mid"), color: "text-warning", bg: "bg-warning/10" },
+                  high: { Icon: AlertCircle, label: t("risk.high"), color: "text-destructive", bg: "bg-destructive/10" },
                 }[r.risk_level];
                 const Icon = meta.Icon;
                 return (
@@ -279,7 +281,7 @@ function SettingsPage() {
 
             {reports && reports.length > 0 && (
               <Button asChild variant="outline" size="sm" className="mt-4 w-full">
-                <Link to="/history">View all reports</Link>
+                <Link to="/history">{t("settings.viewAllReports")}</Link>
               </Button>
             )}
           </aside>

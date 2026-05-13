@@ -1,5 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import "@/lib/i18n";
 import { Heart, LogOut, LayoutDashboard, FileText, MessageCircle, History, Landmark, Settings as SettingsIcon, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
@@ -11,6 +13,7 @@ export const Route = createFileRoute("/_app")({
 function AppLayout() {
   const { session, loading, signOut, user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!loading && !session) navigate({ to: "/login" });
@@ -36,13 +39,13 @@ function AppLayout() {
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex">
-            <NavItem to="/dashboard" icon={LayoutDashboard} label="Dashboard" />
-            <NavItem to="/predict" icon={FileText} label="New Assessment" />
-            <NavItem to="/history" icon={History} label="History" />
-            <NavItem to="/chatbot" icon={MessageCircle} label="Chat" />
-            <NavItem to="/insights" icon={Brain} label="ML Insights" />
-            <NavItem to="/schemes" icon={Landmark} label="Schemes" />
-            <NavItem to="/settings" icon={SettingsIcon} label="Settings" />
+            <NavItem to="/dashboard" icon={LayoutDashboard} label={t("nav.dashboard")} />
+            <NavItem to="/predict" icon={FileText} label={t("nav.predict")} />
+            <NavItem to="/history" icon={History} label={t("nav.history")} />
+            <NavItem to="/chatbot" icon={MessageCircle} label={t("nav.chat")} />
+            <NavItem to="/insights" icon={Brain} label={t("nav.insights")} />
+            <NavItem to="/schemes" icon={Landmark} label={t("nav.schemes")} />
+            <NavItem to="/settings" icon={SettingsIcon} label={t("nav.settings")} />
           </nav>
 
           <div className="flex items-center gap-3">
@@ -50,7 +53,7 @@ function AppLayout() {
               {user?.email || user?.phone}
             </span>
             <Button variant="ghost" size="sm" onClick={() => { signOut(); navigate({ to: "/" }); }}>
-              <LogOut className="mr-2 h-4 w-4" /> Sign out
+              <LogOut className="mr-2 h-4 w-4" /> {t("nav.signOut")}
             </Button>
           </div>
         </div>

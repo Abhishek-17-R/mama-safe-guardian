@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { FileText, MessageCircle, History, Sparkles, Activity, Landmark, Newspaper, ExternalLink, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
@@ -23,6 +24,7 @@ function timeAgo(iso: string): string {
 
 function Dashboard() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { articles, error } = Route.useLoaderData();
   const name = (user?.user_metadata?.full_name as string | undefined) || "there";
 
@@ -30,23 +32,23 @@ function Dashboard() {
     <div className="mx-auto max-w-7xl px-6 py-12">
       <div className="rounded-3xl bg-[image:var(--gradient-hero)] p-8 sm:p-12">
         <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-background/60 px-3 py-1 text-xs font-medium text-primary backdrop-blur">
-          <Sparkles className="h-3.5 w-3.5" /> Welcome to MatriCare
+          <Sparkles className="h-3.5 w-3.5" /> {t("dashboard.welcome")}
         </div>
         <h1 className="mt-4 font-display text-4xl font-semibold text-foreground sm:text-5xl">
-          Hello, {name.split(" ")[0]}.
+          {t("dashboard.hello", { name: name.split(" ")[0] })}
         </h1>
         <p className="mt-3 max-w-xl text-muted-foreground">
-          Ready for your next assessment? Upload a hospital report or enter vitals manually to get an instant AI-powered risk prediction.
+          {t("dashboard.subtitle")}
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Button asChild size="lg" className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-soft)]">
             <Link to="/predict">
-              <FileText className="mr-2 h-4 w-4" /> Start new assessment
+              <FileText className="mr-2 h-4 w-4" /> {t("dashboard.startNew")}
             </Link>
           </Button>
           <Button asChild size="lg" variant="outline">
             <Link to="/history">
-              <History className="mr-2 h-4 w-4" /> View history
+              <History className="mr-2 h-4 w-4" /> {t("dashboard.viewHistory")}
             </Link>
           </Button>
         </div>
@@ -55,29 +57,29 @@ function Dashboard() {
       <div className="mt-10 grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <div className="grid gap-6 sm:grid-cols-2">
-            <QuickCard icon={FileText} title="New Assessment" desc="Upload a PDF or fill the form to predict risk." to="/predict" />
-            <QuickCard icon={History} title="Past Reports" desc="Review your previous risk assessments and trends." to="/history" />
-            <QuickCard icon={MessageCircle} title="Pregnancy Chat" desc="Ask anything — we're here to help, day or night." to="/chatbot" />
-            <QuickCard icon={Landmark} title="Schemes & Benefits" desc="Government schemes and free maternal care you qualify for." to="/schemes" />
+            <QuickCard icon={FileText} title={t("dashboard.newAssessment")} desc={t("dashboard.newAssessmentDesc")} to="/predict" />
+            <QuickCard icon={History} title={t("dashboard.pastReports")} desc={t("dashboard.pastReportsDesc")} to="/history" />
+            <QuickCard icon={MessageCircle} title={t("dashboard.chatTitle")} desc={t("dashboard.chatDesc")} to="/chatbot" />
+            <QuickCard icon={Landmark} title={t("dashboard.schemesTitle")} desc={t("dashboard.schemesDesc")} to="/schemes" />
           </div>
 
           <div className="mt-8 rounded-2xl border border-border/60 bg-card p-6">
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <Activity className="h-4 w-4 text-primary" />
-              <span>More features coming soon: trend graphs and doctor-ready PDF reports.</span>
+              <span>{t("dashboard.moreSoon")}</span>
             </div>
           </div>
         </div>
 
         <aside className="lg:col-span-1">
-          <NewsColumn articles={articles} error={error} />
+          <NewsColumn articles={articles} error={error} t={t} />
         </aside>
       </div>
     </div>
   );
 }
 
-function NewsColumn({ articles, error }: { articles: NewsItem[]; error: string | null }) {
+function NewsColumn({ articles, error, t }: { articles: NewsItem[]; error: string | null; t: (k: string) => string }) {
   return (
     <div className="rounded-3xl border border-border/60 bg-card p-6">
       <div className="mb-4 flex items-center gap-2">
@@ -85,8 +87,8 @@ function NewsColumn({ articles, error }: { articles: NewsItem[]; error: string |
           <Newspaper className="h-4 w-4" />
         </div>
         <div>
-          <h2 className="font-display text-lg font-semibold text-foreground">Latest News</h2>
-          <p className="text-xs text-muted-foreground">Maternal health worldwide</p>
+          <h2 className="font-display text-lg font-semibold text-foreground">{t("dashboard.latestNews")}</h2>
+          <p className="text-xs text-muted-foreground">{t("dashboard.worldwide")}</p>
         </div>
       </div>
 
@@ -98,7 +100,7 @@ function NewsColumn({ articles, error }: { articles: NewsItem[]; error: string |
       )}
 
       {!error && articles.length === 0 && (
-        <p className="text-sm text-muted-foreground">No recent news available.</p>
+        <p className="text-sm text-muted-foreground">{t("dashboard.noNews")}</p>
       )}
 
       <ul className="space-y-4">

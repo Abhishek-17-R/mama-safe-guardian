@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
+import "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Heart, Activity, FileText, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
 import heroImg from "../assets/hero.jpg?url";
@@ -16,6 +18,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -28,16 +31,16 @@ function Landing() {
             <span className="font-display text-xl font-semibold text-foreground">MatriCare</span>
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
-            <a href="#features" className="text-sm text-muted-foreground hover:text-foreground">Features</a>
-            <a href="#how" className="text-sm text-muted-foreground hover:text-foreground">How it works</a>
-            <a href="#trust" className="text-sm text-muted-foreground hover:text-foreground">Why trust us</a>
+            <a href="#features" className="text-sm text-muted-foreground hover:text-foreground">{t("landing.features")}</a>
+            <a href="#how" className="text-sm text-muted-foreground hover:text-foreground">{t("landing.how")}</a>
+            <a href="#trust" className="text-sm text-muted-foreground hover:text-foreground">{t("landing.trust")}</a>
           </nav>
           <div className="flex items-center gap-2">
             <Button asChild variant="ghost" size="sm">
-              <Link to="/login">Sign in</Link>
+              <Link to="/login">{t("nav.signIn")}</Link>
             </Button>
             <Button asChild size="sm" className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-soft)]">
-              <Link to="/signup">Get started</Link>
+              <Link to="/signup">{t("nav.getStarted")}</Link>
             </Button>
           </div>
         </div>
@@ -51,44 +54,44 @@ function Landing() {
             <div className="flex flex-wrap items-center gap-2">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
                 <Sparkles className="h-3.5 w-3.5" />
-                86.4% accuracy
+                {t("landing.accuracy")}
               </div>
               <div className="inline-flex items-center gap-2 rounded-full border border-success/20 bg-success/5 px-3 py-1 text-xs font-medium text-success">
                 <ShieldCheck className="h-3.5 w-3.5" />
-                Private & secure
+                {t("landing.secure")}
               </div>
               <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1 text-xs font-medium text-foreground">
                 <Activity className="h-3.5 w-3.5 text-primary" />
-                1,200+ records trained
+                {t("landing.trained")}
               </div>
               <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1 text-xs font-medium text-foreground">
                 <FileText className="h-3.5 w-3.5 text-primary" />
-                F1 0.87 · Recall 0.86
+                {t("landing.f1")}
               </div>
             </div>
             <h1 className="font-display text-5xl font-semibold leading-[1.05] text-foreground sm:text-6xl lg:text-7xl">
-              Safer pregnancies,<br />
-              <span className="bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">smarter care.</span>
+              {t("landing.heroTitle1")}<br />
+              <span className="bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">{t("landing.heroTitle2")}</span>
             </h1>
             <p className="max-w-lg text-lg leading-relaxed text-muted-foreground">
-              Upload your hospital report or enter vitals. MatriCare reads it with AI, predicts maternal risk in seconds, and guides you to the right next step.
+              {t("landing.heroDesc")}
             </p>
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Button asChild size="lg" className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-elegant)]">
-                <Link to="/signup">Start free assessment</Link>
+                <Link to="/signup">{t("landing.startFree")}</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link to="/login">I already have an account</Link>
+                <Link to="/login">{t("landing.haveAccount")}</Link>
               </Button>
             </div>
             <div className="flex items-center gap-6 pt-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-success" />
-                Private & encrypted
+                {t("landing.privateEnc")}
               </div>
               <div className="flex items-center gap-2">
                 <Activity className="h-4 w-4 text-primary" />
-                Clinically grounded
+                {t("landing.clinical")}
               </div>
             </div>
           </div>
@@ -187,7 +190,7 @@ function Landing() {
             <span>© {new Date().getFullYear()} MatriCare.</span>
           </div>
           <div className="border-t border-border/40 pt-6 text-center">
-            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground/80">Built by</p>
+            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground/80">{t("landing.builtBy")}</p>
             <div className="mt-3 grid gap-4 sm:grid-cols-2">
               <div className="rounded-2xl border border-border/60 bg-card p-4">
                 <p className="font-display text-lg font-semibold text-foreground">Nirupam N Revankar</p>
@@ -199,7 +202,7 @@ function Landing() {
               </div>
             </div>
             <p className="mt-5 text-base">
-              Under the guidance of{" "}
+              {t("landing.guidance")}{" "}
               <span className="font-display font-semibold text-foreground">Prof. Gannavaram Sridhar</span>
             </p>
           </div>

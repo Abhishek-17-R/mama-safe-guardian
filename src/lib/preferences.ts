@@ -46,4 +46,8 @@ export function applyPreferences(p: Preferences) {
   const sizeMap: Record<FontSize, string> = { small: "14px", medium: "16px", large: "18px" };
   root.style.fontSize = sizeMap[p.fontSize];
   root.lang = p.language;
+  // Sync i18n language. Imported lazily to avoid SSR issues.
+  if (typeof window !== "undefined") {
+    import("@/lib/i18n").then(({ setI18nLanguage }) => setI18nLanguage(p.language));
+  }
 }
