@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-rout
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import "@/lib/i18n";
-import { Heart, LogOut, LayoutDashboard, FileText, MessageCircle, History, Landmark, Settings as SettingsIcon, Brain } from "lucide-react";
+import { Heart, LogOut, Settings as SettingsIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 
@@ -39,12 +39,6 @@ function AppLayout() {
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex">
-            <NavItem to="/dashboard" icon={LayoutDashboard} label={t("nav.dashboard")} />
-            <NavItem to="/predict" icon={FileText} label={t("nav.predict")} />
-            <NavItem to="/history" icon={History} label={t("nav.history")} />
-            <NavItem to="/chatbot" icon={MessageCircle} label={t("nav.chat")} />
-            <NavItem to="/insights" icon={Brain} label={t("nav.insights")} />
-            <NavItem to="/schemes" icon={Landmark} label={t("nav.schemes")} />
             <NavItem to="/settings" icon={SettingsIcon} label={t("nav.settings")} />
           </nav>
 

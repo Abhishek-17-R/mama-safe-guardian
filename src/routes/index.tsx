@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import "@/lib/i18n";
 import { Button } from "@/components/ui/button";
-import { Heart, Activity, FileText, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
+import { Heart, Activity, FileText, MessageCircle, ShieldCheck, Sparkles, MessageSquare } from "lucide-react";
 import heroImg from "../assets/hero.jpg?url";
 
 export const Route = createFileRoute("/")({
@@ -208,6 +208,22 @@ function Landing() {
           </div>
         </div>
       </footer>
+
+      {/* Floating live chat button */}
+      <Link
+        to="/signup"
+        aria-label="Live chat"
+        className="group fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[image:var(--gradient-primary)] text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-110"
+      >
+        <MessageSquare className="h-6 w-6" fill="currentColor" />
+        <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success/70" />
+          <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-success border-2 border-background" />
+        </span>
+        <span className="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-lg bg-foreground px-3 py-1.5 text-xs font-medium text-background opacity-0 transition-opacity group-hover:opacity-100">
+          Chat with us
+        </span>
+      </Link>
     </div>
   );
 }
