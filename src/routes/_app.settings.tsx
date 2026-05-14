@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Settings as SettingsIcon, Save, Loader2, User, History as HistoryIcon, FileText, CheckCircle2, AlertTriangle, AlertCircle, Sliders } from "lucide-react";
+import { Settings as SettingsIcon, Save, Loader2, User, History as HistoryIcon, FileText, CheckCircle2, AlertTriangle, AlertCircle, Sliders, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +25,7 @@ interface ProfileForm {
   address: string;
   phone: string;
   email: string;
+  avatar_url: string;
 }
 
 interface PredictionRow {
@@ -43,10 +44,11 @@ function SettingsPage() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const [form, setForm] = useState<ProfileForm>({
-    full_name: "", date_of_birth: "", age: "", address: "", phone: "", email: "",
+    full_name: "", date_of_birth: "", age: "", address: "", phone: "", email: "", avatar_url: "",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [reports, setReports] = useState<PredictionRow[] | null>(null);
   const [prefs, setPrefs] = useState<Preferences>(() => loadPreferences());
 
@@ -71,6 +73,7 @@ function SettingsPage() {
         address: profile?.address ?? "",
         phone: profile?.phone ?? user.phone ?? "",
         email: profile?.email ?? user.email ?? "",
+        avatar_url: (profile as any)?.avatar_url ?? "",
       });
       setReports((preds as PredictionRow[]) ?? []);
       setLoading(false);
@@ -91,6 +94,23 @@ function SettingsPage() {
       }
       return next;
     });
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 5 * 1024 * 1024) return toast.error("Image must be under 5MB");
+    setUploadingAvatar(true);
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${user.id}/avatar-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+    if (upErr) { setUploadingAvatar(false); return toast.error(upErr.message); }
+    const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(path);
+    const { error: dbErr } = await supabase.from("profiles").upsert({ id: user.id, avatar_url: publicUrl });
+    setUploadingAvatar(false);
+    if (dbErr) return toast.error(dbErr.message);
+    setForm((p) => ({ ...p, avatar_url: publicUrl }));
+    toast.success("Profile picture updated");
   };
 
   const handleSave = async (e: React.FormEvent) => {
