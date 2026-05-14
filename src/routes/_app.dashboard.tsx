@@ -61,6 +61,7 @@ function Dashboard() {
             <QuickCard icon={History} title={t("dashboard.pastReports")} desc={t("dashboard.pastReportsDesc")} to="/history" />
             <QuickCard icon={MessageCircle} title={t("dashboard.chatTitle")} desc={t("dashboard.chatDesc")} to="/chatbot" />
             <QuickCard icon={Landmark} title={t("dashboard.schemesTitle")} desc={t("dashboard.schemesDesc")} to="/schemes" />
+            <QuickCard icon={Newspaper} title={t("dashboard.latestNews")} desc={t("dashboard.worldwide")} hash="news" />
           </div>
 
           <div className="mt-8 rounded-2xl border border-border/60 bg-card p-6">
@@ -71,7 +72,7 @@ function Dashboard() {
           </div>
         </div>
 
-        <aside className="lg:col-span-1">
+        <aside className="lg:col-span-1" id="news">
           <NewsColumn articles={articles} error={error} t={t} />
         </aside>
       </div>
@@ -143,10 +144,11 @@ function NewsColumn({ articles, error, t }: { articles: NewsItem[]; error: strin
   );
 }
 
-function QuickCard({ icon: Icon, title, desc, to }: { icon: React.ComponentType<{ className?: string }>; title: string; desc: string; to: string }) {
+function QuickCard({ icon: Icon, title, desc, to, hash }: { icon: React.ComponentType<{ className?: string }>; title: string; desc: string; to?: string; hash?: string }) {
+  const props: any = hash ? { to: ".", hash } : { to };
   return (
     <Link
-      to={to}
+      {...props}
       className="group rounded-3xl border border-border/60 bg-card p-7 transition-all hover:border-primary/30 hover:shadow-[var(--shadow-soft)]"
     >
       <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
