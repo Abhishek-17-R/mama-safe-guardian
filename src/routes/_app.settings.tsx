@@ -155,6 +155,26 @@ function SettingsPage() {
               <h2 className="font-display text-lg font-semibold">{t("settings.personal")}</h2>
             </div>
 
+            <div className="flex items-center gap-5">
+              <div className="relative h-20 w-20 overflow-hidden rounded-full border border-border/60 bg-muted">
+                {form.avatar_url ? (
+                  <img src={form.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                    <User className="h-8 w-8" />
+                  </div>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="avatar-upload" className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium hover:bg-accent">
+                  {uploadingAvatar ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+                  {form.avatar_url ? "Change picture" : "Upload picture"}
+                </Label>
+                <input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} disabled={uploadingAvatar} />
+                <p className="mt-1.5 text-xs text-muted-foreground">PNG or JPG, max 5MB</p>
+              </div>
+            </div>
+
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label={t("settings.fullName")} id="full_name">
                 <Input id="full_name" value={form.full_name} onChange={(e) => handleChange("full_name", e.target.value)} placeholder="Jane Doe" maxLength={100} />
